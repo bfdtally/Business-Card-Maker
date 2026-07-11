@@ -1,8 +1,23 @@
 :root {
-  color-scheme: dark;
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background: #17191f;
-  color: #f3f0e8;
+  color-scheme: light;
+  font-family: "Aptos", "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --page: #eef0ed;
+  --paper: #fbfaf7;
+  --ink: #2f3937;
+  --muted: #6f7875;
+  --brand: #4d5e5a;
+  --brand-dark: #293330;
+  --brand-soft: #dfe7e3;
+  --line: #d8dedb;
+  --gold: #d7b85b;
+  --gold-soft: #f3e6bc;
+  --tool-bg: #151a1d;
+  --tool-panel: #1f252b;
+  --tool-panel-2: #252c33;
+  --tool-ink: #f8f5ee;
+  --tool-muted: #bcc5c1;
+  background: var(--page);
+  color: var(--ink);
 }
 
 * {
@@ -14,8 +29,8 @@ body {
   min-width: 960px;
   min-height: 100vh;
   background:
-    linear-gradient(180deg, rgba(244, 199, 93, 0.08), transparent 270px),
-    #17191f;
+    linear-gradient(180deg, rgba(77, 94, 90, 0.1), transparent 340px),
+    var(--page);
 }
 
 button,
@@ -32,6 +47,8 @@ button {
   height: 100vh;
   display: grid;
   grid-template-rows: 78px minmax(0, 1fr);
+  padding: 14px;
+  gap: 0;
 }
 
 .high-contrast {
@@ -57,8 +74,13 @@ button {
   justify-content: space-between;
   gap: 20px;
   padding: 12px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
-  background: rgba(22, 24, 30, 0.94);
+  border: 1px solid rgba(77, 94, 90, 0.22);
+  border-bottom: 0;
+  border-radius: 8px 8px 0 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent),
+    var(--brand-dark);
+  box-shadow: 0 18px 48px rgba(35, 45, 42, 0.16);
 }
 
 .brand {
@@ -69,27 +91,29 @@ button {
 }
 
 .fox-mark {
-  width: 44px;
-  height: 44px;
+  width: 46px;
+  height: 46px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(244, 199, 93, 0.72);
-  color: #f4c75d;
+  border: 1px solid rgba(215, 184, 91, 0.78);
+  color: var(--gold);
   font-weight: 900;
   letter-spacing: 0;
-  background: #0f1116;
+  background: rgba(10, 13, 14, 0.5);
 }
 
 h1 {
   margin: 0 0 4px;
-  font-size: 18px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 20px;
   line-height: 1.15;
   letter-spacing: 0;
+  color: #fffdf8;
 }
 
 .brand input {
   width: 220px;
-  color: #bfc4ca;
+  color: #d8dedb;
   background: transparent;
   border: 0;
   border-bottom: 1px solid transparent;
@@ -98,7 +122,7 @@ h1 {
 }
 
 .brand input:focus {
-  border-bottom-color: #f4c75d;
+  border-bottom-color: var(--gold);
 }
 
 .toolbar,
@@ -129,10 +153,11 @@ h1 {
 .project-row,
 .preview-modal button {
   color: #f6f3eb;
-  background: #262a33;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.13);
   min-height: 34px;
   cursor: pointer;
+  border-radius: 6px;
 }
 
 .icon-button {
@@ -151,7 +176,7 @@ h1 {
 .project-row:hover,
 .preview-modal button:hover {
   border-color: rgba(244, 199, 93, 0.8);
-  background: #343139;
+  background: rgba(215, 184, 91, 0.18);
 }
 
 .icon-button:disabled {
@@ -162,13 +187,18 @@ h1 {
 .workspace {
   min-height: 0;
   display: grid;
-  grid-template-columns: 260px minmax(520px, 1fr) 294px;
+  grid-template-columns: 260px minmax(560px, 1fr) 294px;
+  border: 1px solid rgba(77, 94, 90, 0.22);
+  border-top: 0;
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
+  box-shadow: 0 24px 70px rgba(35, 45, 42, 0.18);
 }
 
 .panel {
   overflow: auto;
   padding: 15px;
-  background: #1c1f27;
+  background: var(--tool-panel);
   border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -193,7 +223,7 @@ h3 {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #f4c75d;
+  color: var(--gold);
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0;
@@ -201,7 +231,7 @@ h3 {
 
 h3 {
   margin-top: 14px;
-  color: #cdd2d8;
+  color: var(--tool-muted);
 }
 
 .tool-row {
@@ -266,12 +296,13 @@ input[type="range"] {
 .empty-state,
 .notice,
 .warning {
-  color: #aeb5be;
-  background: #151820;
+  color: var(--tool-muted);
+  background: rgba(255, 255, 255, 0.04);
   border: 1px dashed rgba(255, 255, 255, 0.15);
   padding: 12px;
   line-height: 1.45;
   font-size: 13px;
+  border-radius: 8px;
 }
 
 .notice {
@@ -287,7 +318,9 @@ input[type="range"] {
   min-width: 0;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
-  background: #11141a;
+  background:
+    linear-gradient(180deg, rgba(77, 94, 90, 0.1), transparent 260px),
+    var(--tool-bg);
 }
 
 .canvas-controls,
@@ -299,6 +332,7 @@ input[type="range"] {
   padding: 12px 16px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   flex-wrap: wrap;
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .bottom-controls {
@@ -308,14 +342,17 @@ input[type="range"] {
 
 .tabs {
   display: flex;
-  background: #20242d;
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+  overflow: hidden;
 }
 
 .tabs button {
   border: 0;
   padding: 8px 15px;
   background: transparent;
+  border-radius: 0;
 }
 
 .canvas-controls label,
@@ -332,11 +369,12 @@ input[type="range"] {
 select,
 input[type="number"],
 input[type="text"] {
-  color: #f6f3eb;
-  background: #262a33;
+  color: var(--tool-ink);
+  background: var(--tool-panel-2);
   border: 1px solid rgba(255, 255, 255, 0.12);
   padding: 7px 8px;
   min-height: 34px;
+  border-radius: 6px;
 }
 
 .swatches {
@@ -351,14 +389,16 @@ input[type="text"] {
   gap: 6px;
   min-height: 34px;
   padding: 6px 9px;
-  color: #f6f3eb;
-  background: #242832;
+  color: var(--tool-ink);
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.11);
   cursor: pointer;
+  border-radius: 6px;
 }
 
 .swatches button.active {
-  border-color: #f4c75d;
+  border-color: var(--gold);
+  box-shadow: inset 0 0 0 1px rgba(215, 184, 91, 0.28);
 }
 
 .swatches span {
@@ -371,13 +411,14 @@ input[type="text"] {
   min-height: 0;
   overflow: auto;
   position: relative;
-  padding: 50px 40px 48px 58px;
+  padding: 48px 38px 46px 56px;
 }
 
 .canvas-shell {
   position: relative;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.48), 0 0 0 1px rgba(244, 199, 93, 0.18);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.38), 0 0 0 1px rgba(215, 184, 91, 0.2);
   background: #0a0c10;
+  border-radius: 2px;
 }
 
 .canvas-shell canvas {
@@ -388,9 +429,9 @@ input[type="text"] {
 
 .ruler {
   position: absolute;
-  color: #aeb5be;
+  color: var(--tool-muted);
   font-size: 10px;
-  background: #1a1d25;
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -445,11 +486,13 @@ input[type="text"] {
 }
 
 .selection-name {
-  color: #f6f3eb;
-  background: #151820;
+  color: var(--tool-ink);
+  background: rgba(255, 255, 255, 0.04);
   padding: 9px 10px;
   margin-bottom: 12px;
   text-transform: capitalize;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 7px;
 }
 
 .property-grid {
@@ -505,10 +548,45 @@ input[type="text"] {
   width: min(520px, 100%);
   max-height: 80vh;
   overflow: auto;
-  background: #1c1f27;
-  border: 1px solid rgba(244, 199, 93, 0.35);
-  box-shadow: 0 24px 90px rgba(0, 0, 0, 0.55);
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid rgba(77, 94, 90, 0.22);
+  border-radius: 8px;
+  box-shadow: 0 24px 90px rgba(35, 45, 42, 0.25);
   padding: 20px;
+}
+
+.modal h2,
+.preview-modal h2,
+.modal h3,
+.preview-modal h3,
+.modal label,
+.preview-modal label,
+.modal .export-grid label,
+.preview-modal .preview-options {
+  color: var(--ink);
+}
+
+.modal input,
+.modal select,
+.preview-modal input,
+.preview-modal select {
+  color: var(--ink);
+  background: #ffffff;
+  border-color: var(--line);
+}
+
+.modal button,
+.preview-modal button {
+  color: #ffffff;
+  background: var(--brand);
+  border-color: transparent;
+}
+
+.modal button:hover,
+.preview-modal button:hover {
+  background: var(--brand-dark);
+  border-color: transparent;
 }
 
 .project-row {
@@ -522,7 +600,7 @@ input[type="text"] {
 }
 
 .project-row span {
-  color: #aeb5be;
+  color: var(--tool-muted);
 }
 
 .preview-modal {
@@ -567,8 +645,9 @@ input[type="text"] {
   padding: 11px;
   margin-bottom: 8px;
   color: #f6f3eb;
-  background: #20242d;
+  background: var(--tool-panel-2);
   border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
 }
 
 .finding.error {
@@ -592,13 +671,14 @@ input[type="text"] {
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 12px;
-  color: #cdd2d8;
+  color: var(--tool-muted);
 }
 
 .preview-options span {
   border: 1px solid rgba(255, 255, 255, 0.12);
   padding: 6px 8px;
-  background: #151820;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 999px;
 }
 
 .color-preview-grid {
@@ -635,7 +715,7 @@ input[type="text"] {
   }
 
   .workspace {
-    grid-template-columns: 220px minmax(440px, 1fr) 250px;
+    grid-template-columns: 220px minmax(480px, 1fr) 250px;
   }
 
   .toolbar {
