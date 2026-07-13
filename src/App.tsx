@@ -256,6 +256,129 @@ const inches = (pixels: number) => pixels / DPI;
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 const fmt = (value: number) => Number(value.toFixed(3));
 const uid = () => crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+const BORDER_STYLE_COUNT = 12;
+
+type BorderStyleKind =
+  | 'plain'
+  | 'double'
+  | 'side-bars'
+  | 'top-bottom'
+  | 'corner-caps'
+  | 'corner-steps'
+  | 'corner-dots'
+  | 'center-notch'
+  | 'mid-dots'
+  | 'art-deco'
+  | 'diagonal-cuts'
+  | 'short-rails'
+  | 'inner-corners'
+  | 'diamond-marks'
+  | 'tech-nodes'
+  | 'circuit'
+  | 'industrial-slash'
+  | 'bracket'
+  | 'floral'
+  | 'wave'
+  | 'minimal-gap'
+  | 'bold-corners'
+  | 'triple'
+  | 'divider';
+
+const BORDER_STYLE_KINDS: BorderStyleKind[] = [
+  'plain',
+  'double',
+  'corner-caps',
+  'art-deco',
+  'floral',
+  'wave',
+  'corner-steps',
+  'inner-corners',
+  'bold-corners',
+  'diagonal-cuts',
+  'bracket',
+  'side-bars',
+  'short-rails',
+];
+
+const BORDER_STYLE_LABELS: Record<BorderStyleKind, string> = {
+  plain: 'Simple frame',
+  double: 'Inner line frame',
+  'side-bars': 'Side ornaments',
+  'top-bottom': 'Top accent',
+  'corner-caps': 'Clipped corners',
+  'corner-steps': 'Fine pin corners',
+  'corner-dots': 'Dot corner',
+  'center-notch': 'Center notch',
+  'mid-dots': 'Midpoint dots',
+  'art-deco': 'Scroll caps',
+  'diagonal-cuts': 'Angled corners',
+  'short-rails': 'Broken rail frame',
+  'inner-corners': 'Inset corner frame',
+  'diamond-marks': 'Diamond marks',
+  'tech-nodes': 'Tech nodes',
+  circuit: 'Circuit line',
+  'industrial-slash': 'Industrial slash',
+  bracket: 'Side bracket frame',
+  floral: 'Floral corners',
+  wave: 'Ornate scrolls',
+  'minimal-gap': 'Dashed minimal',
+  'bold-corners': 'Block corners',
+  triple: 'Triple line',
+  divider: 'Divider frame',
+};
+
+function borderPreviewSvg(index: number, category: BorderCategory) {
+  const kind = BORDER_STYLE_KINDS[index % BORDER_STYLE_KINDS.length];
+  const rounded = category === 'Rounded rectangle' || category === 'Elegant' || category === 'Corporate';
+  const dash = ['Technology', 'Circuit board'].includes(category) || kind === 'minimal-gap' ? ' stroke-dasharray="5 3"' : '';
+  const accent = '#176a4c';
+  const muted = '#9eb5aa';
+  const rect = `<rect x="10" y="10" width="76" height="42" rx="${rounded ? 9 : 2}" fill="none" stroke="${accent}" stroke-width="3"${dash}/>`;
+  const inner = category === 'Double line' || ['double', 'triple', 'inner-corners'].includes(kind) ? `<rect x="16" y="16" width="64" height="30" rx="${rounded ? 6 : 1}" fill="none" stroke="${muted}" stroke-width="1.6"/>` : '';
+  const corners = ['Corner accents', 'Art Deco', 'Industrial'].includes(category)
+    ? '<path d="M10 24V10h14M72 10h14v14M10 38v14h14M72 52h14V38" fill="none" stroke="#176a4c" stroke-width="3" stroke-linecap="round"/>'
+    : '';
+  const geometric = ['Geometric', 'African-inspired geometric'].includes(category)
+    ? '<path d="M18 10l8 8 8-8M42 10l8 8 8-8M66 10l8 8 8-8M18 52l8-8 8 8M42 52l8-8 8 8M66 52l8-8 8 8" fill="none" stroke="#176a4c" stroke-width="2" stroke-linejoin="round"/>'
+    : '';
+  const floral = ['Floral', 'Elegant'].includes(category)
+    ? '<path d="M20 21c8-12 18-12 26 0M50 41c8 12 18 12 26 0" fill="none" stroke="#176a4c" stroke-width="2" stroke-linecap="round"/>'
+    : '';
+  const tech = ['Technology', 'Circuit board'].includes(category)
+    ? '<path d="M26 10v12h16M62 52V40H46" fill="none" stroke="#176a4c" stroke-width="2.4" stroke-linecap="round"/><circle cx="42" cy="22" r="3" fill="#176a4c"/><circle cx="46" cy="40" r="3" fill="#176a4c"/>'
+    : '';
+  const divider = category === 'Decorative divider'
+    ? '<path d="M12 31h28M56 31h28" fill="none" stroke="#176a4c" stroke-width="3" stroke-linecap="round"/><circle cx="48" cy="31" r="5" fill="none" stroke="#176a4c" stroke-width="2"/>'
+    : '';
+  const styleArt: Record<BorderStyleKind, string> = {
+    plain: '',
+    double: '',
+    'side-bars': '<path d="M16 24v14M80 24v14" fill="none" stroke="#9eb5aa" stroke-width="2.5" stroke-linecap="round"/>',
+    'top-bottom': '<path d="M30 17h36M30 45h36" fill="none" stroke="#9eb5aa" stroke-width="2.4" stroke-linecap="round"/>',
+    'corner-caps': '<path d="M10 24V10h14M72 10h14v14M10 38v14h14M72 52h14V38" fill="none" stroke="#176a4c" stroke-width="3" stroke-linecap="round"/>',
+    'corner-steps': '<path d="M15 24v-9h9M72 15h9v9M15 38v9h9M72 47h9v-9" fill="none" stroke="#9eb5aa" stroke-width="2.3" stroke-linecap="round"/>',
+    'corner-dots': '<circle cx="18" cy="18" r="3" fill="#176a4c"/><circle cx="78" cy="18" r="3" fill="#176a4c"/><circle cx="18" cy="44" r="3" fill="#176a4c"/><circle cx="78" cy="44" r="3" fill="#176a4c"/>',
+    'center-notch': '<path d="M42 10h12M42 52h12M10 25v12M86 25v12" fill="none" stroke="#9eb5aa" stroke-width="2.4" stroke-linecap="round"/>',
+    'mid-dots': '<circle cx="48" cy="10" r="3" fill="#176a4c"/><circle cx="48" cy="52" r="3" fill="#176a4c"/><circle cx="10" cy="31" r="3" fill="#176a4c"/><circle cx="86" cy="31" r="3" fill="#176a4c"/>',
+    'art-deco': '<path d="M28 10l8 8h24l8-8M28 52l8-8h24l8 8" fill="none" stroke="#9eb5aa" stroke-width="2.1" stroke-linejoin="round"/>',
+    'diagonal-cuts': '<path d="M12 25l15-15M69 10l15 15M12 37l15 15M69 52l15-15" fill="none" stroke="#9eb5aa" stroke-width="2.2" stroke-linecap="round"/>',
+    'short-rails': '<path d="M20 18h20M56 18h20M20 44h20M56 44h20" fill="none" stroke="#9eb5aa" stroke-width="2.2" stroke-linecap="round"/>',
+    'inner-corners': '<path d="M22 27V22h8M66 22h8v5M22 35v5h8M66 40h8v-5" fill="none" stroke="#176a4c" stroke-width="2.2" stroke-linecap="round"/>',
+    'diamond-marks': '<path d="M48 14l5 5-5 5-5-5zM48 38l5 5-5 5-5-5z" fill="none" stroke="#176a4c" stroke-width="2"/>',
+    'tech-nodes': '<path d="M24 10v12h16M72 52V40H56" fill="none" stroke="#9eb5aa" stroke-width="2.2"/><circle cx="40" cy="22" r="3" fill="#176a4c"/><circle cx="56" cy="40" r="3" fill="#176a4c"/>',
+    circuit: '<path d="M16 31h20v-9h22v18h22" fill="none" stroke="#9eb5aa" stroke-width="2.2"/><circle cx="36" cy="22" r="3" fill="#176a4c"/><circle cx="58" cy="40" r="3" fill="#176a4c"/>',
+    'industrial-slash': '<path d="M24 10l10 10M46 10l10 10M68 10l10 10M24 52l10-10M46 52l10-10M68 52l10-10" fill="none" stroke="#9eb5aa" stroke-width="2.1" stroke-linecap="round"/>',
+    bracket: '<path d="M26 16H16v30h10M70 16h10v30H70" fill="none" stroke="#176a4c" stroke-width="2.6" stroke-linecap="round"/>',
+    floral: '<path d="M20 31c10-16 20-16 30 0M46 31c10 16 20 16 30 0" fill="none" stroke="#9eb5aa" stroke-width="2" stroke-linecap="round"/>',
+    wave: '<path d="M18 17c10 8 18 8 28 0s18-8 32 0M18 45c10-8 18-8 28 0s18 8 32 0" fill="none" stroke="#9eb5aa" stroke-width="2" stroke-linecap="round"/>',
+    'minimal-gap': '<path d="M38 10h20M38 52h20" fill="none" stroke="#176a4c" stroke-width="3" stroke-linecap="round"/>',
+    'bold-corners': '<path d="M10 28V10h18M68 10h18v18M10 34v18h18M68 52h18V34" fill="none" stroke="#176a4c" stroke-width="4" stroke-linecap="round"/>',
+    triple: '<rect x="21" y="21" width="54" height="20" rx="1" fill="none" stroke="#d1dfd8" stroke-width="1.2"/>',
+    divider: '<path d="M14 31h26M56 31h26" fill="none" stroke="#176a4c" stroke-width="3" stroke-linecap="round"/><path d="M48 24l7 7-7 7-7-7z" fill="none" stroke="#176a4c" stroke-width="2"/>',
+  };
+  const artwork = divider || (kind === 'divider' ? styleArt.divider : `${rect}${inner}${corners}${geometric}${floral}${tech}${styleArt[kind]}`);
+  return `data:image/svg+xml;utf8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 62">${artwork}</svg>`)}`;
+}
 
 function documentSize(orientation: Orientation) {
   return orientation === 'landscape'
@@ -513,6 +636,7 @@ export function App() {
   const [borderCornerStyle, setBorderCornerStyle] = useState<'square' | 'rounded' | 'chamfered'>('square');
   const [borderMirrorX, setBorderMirrorX] = useState(false);
   const [borderMirrorY, setBorderMirrorY] = useState(false);
+  const [selectedBorderIndex, setSelectedBorderIndex] = useState(0);
   const [exportNotice, setExportNotice] = useState<string | null>(null);
 
   const size = useMemo(() => documentSize(orientation), [orientation]);
@@ -758,6 +882,7 @@ export function App() {
   };
 
   const borderObjects = (presetIndex: number, category: BorderCategory) => {
+    const styleKind = BORDER_STYLE_KINDS[presetIndex % BORDER_STYLE_KINDS.length];
     const m = px(borderMargin);
     const sw = Math.max(1, px(borderStroke));
     const radius = px(borderRadius);
@@ -770,68 +895,115 @@ export function App() {
     const bottom = top + height;
     const objects: FabricObject[] = [];
     const line = (points: [number, number, number, number], extra = {}) => new Line(points, { stroke: previewEngrave, strokeWidth: sw, fill: 'transparent', strokeLineCap: 'round', ...extra });
-    const rect = (offset = 0, extra = {}) => new Rect({ left: left + offset, top: top + offset, width: width - offset * 2, height: height - offset * 2, fill: 'transparent', stroke: previewEngrave, strokeWidth: sw, rx: category === 'Rounded rectangle' || borderCornerStyle === 'rounded' ? radius : 0, ry: category === 'Rounded rectangle' || borderCornerStyle === 'rounded' ? radius : 0, ...extra });
+    const rect = (offset = 0, extra = {}) => new Rect({ left: left + offset, top: top + offset, width: width - offset * 2, height: height - offset * 2, fill: 'transparent', stroke: previewEngrave, strokeWidth: sw, rx: ['floral', 'wave'].includes(styleKind) ? radius : 0, ry: ['floral', 'wave'].includes(styleKind) ? radius : 0, ...extra });
     const path = (d: string, extra = {}) => new Path(d, { fill: 'transparent', stroke: previewEngrave, strokeWidth: sw, strokeLineCap: 'round', strokeLineJoin: 'round', ...extra });
-    if (['Simple line', 'Minimal', 'Corporate', 'Rounded rectangle'].includes(category)) objects.push(rect(0));
-    if (category === 'Double line') objects.push(rect(0), rect(px(0.075), { strokeWidth: sw * 0.65 }));
-    if (category === 'Corner accents') {
-      const len = Math.min(width, height) * 0.18;
-      objects.push(line([left, top, left + len, top]), line([left, top, left, top + len]), line([right - len, top, right, top]), line([right, top, right, top + len]), line([left, bottom, left + len, bottom]), line([left, bottom - len, left, bottom]), line([right - len, bottom, right, bottom]), line([right, bottom - len, right, bottom]));
-    }
-    if (category === 'Art Deco') {
-      const step = width / density;
-      objects.push(rect(0), rect(px(0.055), { strokeWidth: sw * 0.5 }));
-      for (let i = 1; i < density; i += 1) objects.push(line([left + step * i, top, left + step * i + step * 0.35, top + px(0.12)], { strokeWidth: sw * 0.65 }), line([left + step * i, bottom, left + step * i + step * 0.35, bottom - px(0.12)], { strokeWidth: sw * 0.65 }));
-    }
-    if (category === 'Geometric' || category === 'African-inspired geometric') {
-      objects.push(rect(0));
-      const step = width / density;
-      for (let i = 0; i < density; i += 1) {
-        const x = left + i * step;
-        objects.push(new Polygon([{ x, y: top }, { x: x + step / 2, y: top + px(0.09) }, { x: x + step, y: top }], { fill: 'transparent', stroke: previewEngrave, strokeWidth: sw * 0.55 }));
-        objects.push(new Polygon([{ x, y: bottom }, { x: x + step / 2, y: bottom - px(0.09) }, { x: x + step, y: bottom }], { fill: 'transparent', stroke: previewEngrave, strokeWidth: sw * 0.55 }));
-      }
-    }
-    if (category === 'Floral' || category === 'Elegant') {
-      objects.push(rect(0));
-      for (const [cx, cy] of [[left + px(0.18), top + px(0.18)], [right - px(0.18), top + px(0.18)], [left + px(0.18), bottom - px(0.18)], [right - px(0.18), bottom - px(0.18)]]) {
-        objects.push(path(`M ${cx - 18} ${cy} C ${cx - 6} ${cy - 18}, ${cx + 6} ${cy - 18}, ${cx + 18} ${cy} C ${cx + 6} ${cy + 18}, ${cx - 6} ${cy + 18}, ${cx - 18} ${cy}`));
-      }
-    }
-    if (category === 'Technology' || category === 'Circuit board') {
-      objects.push(rect(0));
-      for (let i = 1; i < density; i += 1) {
-        const x = left + (width / density) * i;
-        const y = top + (height / density) * ((i % (density - 1)) + 0.5);
-        objects.push(line([x, top, x, top + px(0.13)], { strokeWidth: sw * 0.6 }), line([x, y, x + px(0.16), y], { strokeWidth: sw * 0.6 }), new FabricCircle({ left: x + px(0.16), top: y - sw, radius: sw * 0.9, fill: previewEngrave, stroke: previewEngrave }));
-      }
-    }
-    if (category === 'Industrial') {
-      objects.push(rect(0));
-      for (let i = 0; i <= density; i += 1) {
-        const x = left + (width / density) * i;
-        objects.push(line([x, top, x + px(0.08), top + px(0.08)], { strokeWidth: sw * 0.65 }), line([x, bottom, x + px(0.08), bottom - px(0.08)], { strokeWidth: sw * 0.65 }));
-      }
-    }
-    if (category === 'Decorative divider') {
-      const y = canvasHeight / 2;
-      objects.push(line([left, y, right, y]), new FabricCircle({ left: canvasWidth / 2 - sw * 1.6, top: y - sw * 1.6, radius: sw * 1.6, fill: 'transparent', stroke: previewEngrave, strokeWidth: sw }));
-    }
+    if (!['divider'].includes(styleKind)) objects.push(rect(0, { strokeDashArray: styleKind === 'minimal-gap' ? [px(0.08), px(0.05)] : undefined }));
+    if (['double', 'triple', 'inner-corners'].includes(styleKind)) objects.push(rect(px(0.075), { strokeWidth: sw * 0.65 }));
     if (objects.length === 0) objects.push(rect(0));
-    if (borderCornerStyle === 'chamfered') {
-      const c = Math.min(width, height) * 0.08;
-      objects.push(line([left, top + c, left + c, top], { strokeWidth: sw * 0.75 }), line([right - c, top, right, top + c], { strokeWidth: sw * 0.75 }), line([left, bottom - c, left + c, bottom], { strokeWidth: sw * 0.75 }), line([right - c, bottom, right, bottom - c], { strokeWidth: sw * 0.75 }));
+    if (styleKind === 'side-bars') objects.push(line([left + px(0.08), top + height * 0.3, left + px(0.08), top + height * 0.7], { strokeWidth: sw * 0.6 }), line([right - px(0.08), top + height * 0.3, right - px(0.08), top + height * 0.7], { strokeWidth: sw * 0.6 }));
+    if (styleKind === 'top-bottom') objects.push(line([left + width * 0.28, top + px(0.08), left + width * 0.72, top + px(0.08)], { strokeWidth: sw * 0.6 }), line([left + width * 0.28, bottom - px(0.08), left + width * 0.72, bottom - px(0.08)], { strokeWidth: sw * 0.6 }));
+    if (styleKind === 'corner-caps' || styleKind === 'bold-corners') {
+      const len = Math.min(width, height) * (styleKind === 'bold-corners' ? 0.2 : 0.14);
+      objects.push(line([left, top + len, left, top], { strokeWidth: sw * 1.2 }), line([left, top, left + len, top], { strokeWidth: sw * 1.2 }), line([right - len, top, right, top], { strokeWidth: sw * 1.2 }), line([right, top, right, top + len], { strokeWidth: sw * 1.2 }), line([left, bottom - len, left, bottom], { strokeWidth: sw * 1.2 }), line([left, bottom, left + len, bottom], { strokeWidth: sw * 1.2 }), line([right - len, bottom, right, bottom], { strokeWidth: sw * 1.2 }), line([right, bottom - len, right, bottom], { strokeWidth: sw * 1.2 }));
     }
-    const variant = presetIndex % 3;
-    if (variant === 1) objects.push(line([left + width * 0.28, top + px(0.08), left + width * 0.72, top + px(0.08)], { strokeWidth: sw * 0.6 }), line([left + width * 0.28, bottom - px(0.08), left + width * 0.72, bottom - px(0.08)], { strokeWidth: sw * 0.6 }));
-    if (variant === 2) objects.push(line([left + px(0.08), top + height * 0.28, left + px(0.08), top + height * 0.72], { strokeWidth: sw * 0.6 }), line([right - px(0.08), top + height * 0.28, right - px(0.08), top + height * 0.72], { strokeWidth: sw * 0.6 }));
+    if (styleKind === 'corner-steps' || styleKind === 'inner-corners') {
+      const inset = styleKind === 'inner-corners' ? px(0.14) : px(0.06);
+      const len = px(0.16);
+      objects.push(line([left + inset, top + inset + len, left + inset, top + inset], { strokeWidth: sw * 0.7 }), line([left + inset, top + inset, left + inset + len, top + inset], { strokeWidth: sw * 0.7 }), line([right - inset - len, top + inset, right - inset, top + inset], { strokeWidth: sw * 0.7 }), line([right - inset, top + inset, right - inset, top + inset + len], { strokeWidth: sw * 0.7 }), line([left + inset, bottom - inset - len, left + inset, bottom - inset], { strokeWidth: sw * 0.7 }), line([left + inset, bottom - inset, left + inset + len, bottom - inset], { strokeWidth: sw * 0.7 }), line([right - inset - len, bottom - inset, right - inset, bottom - inset], { strokeWidth: sw * 0.7 }), line([right - inset, bottom - inset - len, right - inset, bottom - inset], { strokeWidth: sw * 0.7 }));
+    }
+    if (styleKind === 'corner-dots') {
+      const dot = sw * 1.6;
+      [[left + px(0.08), top + px(0.08)], [right - px(0.08), top + px(0.08)], [left + px(0.08), bottom - px(0.08)], [right - px(0.08), bottom - px(0.08)]].forEach(([cx, cy]) => objects.push(new FabricCircle({ left: cx - dot, top: cy - dot, radius: dot, fill: previewEngrave, stroke: previewEngrave })));
+    }
+    if (styleKind === 'center-notch') objects.push(line([canvasWidth / 2 - px(0.08), top, canvasWidth / 2 + px(0.08), top], { strokeWidth: sw * 1.1 }), line([canvasWidth / 2 - px(0.08), bottom, canvasWidth / 2 + px(0.08), bottom], { strokeWidth: sw * 1.1 }), line([left, canvasHeight / 2 - px(0.08), left, canvasHeight / 2 + px(0.08)], { strokeWidth: sw * 1.1 }), line([right, canvasHeight / 2 - px(0.08), right, canvasHeight / 2 + px(0.08)], { strokeWidth: sw * 1.1 }));
+    if (styleKind === 'mid-dots') {
+      const dot = sw * 1.7;
+      [[canvasWidth / 2, top], [canvasWidth / 2, bottom], [left, canvasHeight / 2], [right, canvasHeight / 2]].forEach(([cx, cy]) => objects.push(new FabricCircle({ left: cx - dot, top: cy - dot, radius: dot, fill: previewEngrave, stroke: previewEngrave })));
+    }
+    if (styleKind === 'art-deco') objects.push(path(`M ${left + width * 0.28} ${top} L ${left + width * 0.36} ${top + px(0.08)} L ${left + width * 0.64} ${top + px(0.08)} L ${left + width * 0.72} ${top}`), path(`M ${left + width * 0.28} ${bottom} L ${left + width * 0.36} ${bottom - px(0.08)} L ${left + width * 0.64} ${bottom - px(0.08)} L ${left + width * 0.72} ${bottom}`));
+    if (styleKind === 'diagonal-cuts') {
+      const cut = px(0.18);
+      const inset = px(0.06);
+      objects.push(
+        line([left + inset, top + cut, left + cut, top + inset], { strokeWidth: sw * 0.75 }),
+        line([right - cut, top + inset, right - inset, top + cut], { strokeWidth: sw * 0.75 }),
+        line([left + inset, bottom - cut, left + cut, bottom - inset], { strokeWidth: sw * 0.75 }),
+        line([right - cut, bottom - inset, right - inset, bottom - cut], { strokeWidth: sw * 0.75 }),
+        line([left + cut * 1.35, top + inset, right - cut * 1.35, top + inset], { strokeWidth: sw * 0.4 }),
+        line([left + cut * 1.35, bottom - inset, right - cut * 1.35, bottom - inset], { strokeWidth: sw * 0.4 }),
+        line([left + inset, top + cut * 1.35, left + inset, bottom - cut * 1.35], { strokeWidth: sw * 0.4 }),
+        line([right - inset, top + cut * 1.35, right - inset, bottom - cut * 1.35], { strokeWidth: sw * 0.4 }),
+      );
+    }
+    if (styleKind === 'industrial-slash') {
+      const len = px(0.14);
+      for (let i = 0; i < 5; i += 1) {
+        const x = left + width * (0.18 + i * 0.16);
+        objects.push(line([x, top, x + len, top + len], { strokeWidth: sw * 0.55 }), line([x, bottom, x + len, bottom - len], { strokeWidth: sw * 0.55 }));
+      }
+    }
+    if (styleKind === 'short-rails') objects.push(line([left + width * 0.15, top + px(0.08), left + width * 0.34, top + px(0.08)], { strokeWidth: sw * 0.6 }), line([left + width * 0.66, top + px(0.08), left + width * 0.85, top + px(0.08)], { strokeWidth: sw * 0.6 }), line([left + width * 0.15, bottom - px(0.08), left + width * 0.34, bottom - px(0.08)], { strokeWidth: sw * 0.6 }), line([left + width * 0.66, bottom - px(0.08), left + width * 0.85, bottom - px(0.08)], { strokeWidth: sw * 0.6 }));
+    if (styleKind === 'diamond-marks') {
+      const makeDiamond = (cx: number, cy: number) => new Polygon([{ x: cx, y: cy - px(0.04) }, { x: cx + px(0.04), y: cy }, { x: cx, y: cy + px(0.04) }, { x: cx - px(0.04), y: cy }], { fill: 'transparent', stroke: previewEngrave, strokeWidth: sw * 0.65 });
+      objects.push(makeDiamond(canvasWidth / 2, top + px(0.08)), makeDiamond(canvasWidth / 2, bottom - px(0.08)));
+    }
+    if (styleKind === 'tech-nodes' || styleKind === 'circuit') {
+      objects.push(line([left + width * 0.25, top, left + width * 0.25, top + px(0.12)], { strokeWidth: sw * 0.55 }), line([right - width * 0.25, bottom, right - width * 0.25, bottom - px(0.12)], { strokeWidth: sw * 0.55 }));
+      const dot = sw * 1.2;
+      [[left + width * 0.25, top + px(0.12)], [right - width * 0.25, bottom - px(0.12)]].forEach(([cx, cy]) => objects.push(new FabricCircle({ left: cx - dot, top: cy - dot, radius: dot, fill: previewEngrave, stroke: previewEngrave })));
+      if (styleKind === 'circuit') objects.push(line([left + width * 0.25, canvasHeight / 2, right - width * 0.25, canvasHeight / 2], { strokeWidth: sw * 0.45, strokeDashArray: [px(0.08), px(0.05)] }));
+    }
+    if (styleKind === 'bracket') objects.push(path(`M ${left + px(0.18)} ${top + px(0.12)} L ${left + px(0.08)} ${top + px(0.12)} L ${left + px(0.08)} ${bottom - px(0.12)} L ${left + px(0.18)} ${bottom - px(0.12)}`, { strokeWidth: sw * 0.75 }), path(`M ${right - px(0.18)} ${top + px(0.12)} L ${right - px(0.08)} ${top + px(0.12)} L ${right - px(0.08)} ${bottom - px(0.12)} L ${right - px(0.18)} ${bottom - px(0.12)}`, { strokeWidth: sw * 0.75 }));
+    if (styleKind === 'floral') {
+      const floralCorner = (cx: number, cy: number, sx: 1 | -1, sy: 1 | -1) => {
+        const a = px(0.06);
+        const b = px(0.14);
+        const c = px(0.22);
+        objects.push(
+          path(`M ${cx} ${cy + sy * c} C ${cx + sx * a} ${cy + sy * b}, ${cx + sx * b} ${cy + sy * a}, ${cx + sx * c} ${cy}`),
+          path(`M ${cx + sx * a} ${cy + sy * b} C ${cx + sx * b} ${cy + sy * b}, ${cx + sx * b} ${cy + sy * a}, ${cx + sx * a} ${cy + sy * a}`, { strokeWidth: sw * 0.55 }),
+          new FabricCircle({ left: cx + sx * c - sw * 0.9, top: cy - sw * 0.9, radius: sw * 0.9, fill: 'transparent', stroke: previewEngrave, strokeWidth: sw * 0.5 }),
+        );
+      };
+      floralCorner(left + px(0.08), top + px(0.08), 1, 1);
+      floralCorner(right - px(0.08), top + px(0.08), -1, 1);
+      floralCorner(left + px(0.08), bottom - px(0.08), 1, -1);
+      floralCorner(right - px(0.08), bottom - px(0.08), -1, -1);
+    }
+    if (styleKind === 'wave') {
+      const scrollTop = top + px(0.08);
+      const scrollBottom = bottom - px(0.08);
+      const scrollLeft = left + px(0.08);
+      const scrollRight = right - px(0.08);
+      objects.push(
+        path(`M ${canvasWidth / 2 - px(0.28)} ${scrollTop} C ${canvasWidth / 2 - px(0.18)} ${scrollTop - px(0.08)}, ${canvasWidth / 2 - px(0.08)} ${scrollTop + px(0.08)}, ${canvasWidth / 2} ${scrollTop} C ${canvasWidth / 2 + px(0.08)} ${scrollTop - px(0.08)}, ${canvasWidth / 2 + px(0.18)} ${scrollTop + px(0.08)}, ${canvasWidth / 2 + px(0.28)} ${scrollTop}`),
+        path(`M ${canvasWidth / 2 - px(0.28)} ${scrollBottom} C ${canvasWidth / 2 - px(0.18)} ${scrollBottom + px(0.08)}, ${canvasWidth / 2 - px(0.08)} ${scrollBottom - px(0.08)}, ${canvasWidth / 2} ${scrollBottom} C ${canvasWidth / 2 + px(0.08)} ${scrollBottom + px(0.08)}, ${canvasWidth / 2 + px(0.18)} ${scrollBottom - px(0.08)}, ${canvasWidth / 2 + px(0.28)} ${scrollBottom}`),
+        path(`M ${scrollLeft} ${canvasHeight / 2 - px(0.18)} C ${scrollLeft - px(0.07)} ${canvasHeight / 2 - px(0.08)}, ${scrollLeft + px(0.07)} ${canvasHeight / 2}, ${scrollLeft} ${canvasHeight / 2 + px(0.18)}`, { strokeWidth: sw * 0.65 }),
+        path(`M ${scrollRight} ${canvasHeight / 2 - px(0.18)} C ${scrollRight + px(0.07)} ${canvasHeight / 2 - px(0.08)}, ${scrollRight - px(0.07)} ${canvasHeight / 2}, ${scrollRight} ${canvasHeight / 2 + px(0.18)}`, { strokeWidth: sw * 0.65 }),
+      );
+    }
+    if (styleKind === 'triple') objects.push(rect(px(0.13), { strokeWidth: sw * 0.45 }));
+    if (styleKind === 'divider') {
+      const y = canvasHeight / 2;
+      objects.push(line([left, y, canvasWidth / 2 - px(0.12), y], { strokeWidth: sw }), line([canvasWidth / 2 + px(0.12), y, right, y], { strokeWidth: sw }), new Polygon([{ x: canvasWidth / 2, y: y - px(0.06) }, { x: canvasWidth / 2 + px(0.06), y }, { x: canvasWidth / 2, y: y + px(0.06) }, { x: canvasWidth / 2 - px(0.06), y }], { fill: 'transparent', stroke: previewEngrave, strokeWidth: sw * 0.65 }));
+    }
     return objects;
   };
 
-  const addBorder = (presetIndex = 0, category: BorderCategory = borderCategory) => {
+  const addBorder = (presetIndex = 0, category: BorderCategory = 'Simple line') => {
+    removeBorders(false);
     const objects = borderObjects(presetIndex, category);
-    const group = new FabricGroup(objects, { left: 0, top: 0, scaleX: borderMirrorX ? -1 : 1, scaleY: borderMirrorY ? -1 : 1 });
-    setCustom(group, 'blackFoxBorderPreset', `${category} ${presetIndex + 1}`);
+    objects.forEach((object) => setCustom(object, 'blackFoxBorderPreset', `${BORDER_STYLE_LABELS[BORDER_STYLE_KINDS[presetIndex]]} piece`));
+    const group = new FabricGroup(objects, {
+      left: canvasWidth / 2,
+      top: canvasHeight / 2,
+      originX: 'center',
+      originY: 'center',
+      scaleX: borderMirrorX ? -1 : 1,
+      scaleY: borderMirrorY ? -1 : 1,
+    });
+    setSelectedBorderIndex(presetIndex);
+    setCustom(group, 'blackFoxBorderPreset', BORDER_STYLE_LABELS[BORDER_STYLE_KINDS[presetIndex]]);
     addObject(group, true, true);
   };
 
@@ -850,8 +1022,18 @@ export function App() {
     if (targetJson) await canvas.loadFromJSON(targetJson);
     restoringRef.current = false;
     applyGuides();
-    const group = new FabricGroup(borderObjects(0, borderCategory), { left: 0, top: 0, scaleX: borderMirrorX ? -1 : 1, scaleY: borderMirrorY ? -1 : 1 });
-    setCustom(group, 'blackFoxBorderPreset', `${borderCategory} applied to ${target}`);
+    removeBorders(false);
+    const targetObjects = borderObjects(selectedBorderIndex, 'Simple line');
+    targetObjects.forEach((object) => setCustom(object, 'blackFoxBorderPreset', `${BORDER_STYLE_LABELS[BORDER_STYLE_KINDS[selectedBorderIndex]]} piece`));
+    const group = new FabricGroup(targetObjects, {
+      left: canvasWidth / 2,
+      top: canvasHeight / 2,
+      originX: 'center',
+      originY: 'center',
+      scaleX: borderMirrorX ? -1 : 1,
+      scaleY: borderMirrorY ? -1 : 1,
+    });
+    setCustom(group, 'blackFoxBorderPreset', `${BORDER_STYLE_LABELS[BORDER_STYLE_KINDS[selectedBorderIndex]]} applied to ${target}`);
     canvas.add(group);
     sideDataRef.current[target] = canvas.toJSON();
     restoringRef.current = true;
@@ -864,12 +1046,18 @@ export function App() {
     remember();
   };
 
-  const removeBorders = () => {
+  const removeBorders = (rememberChange = true) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    canvas.getObjects().filter((object) => Boolean(object.get('blackFoxBorderPreset' as keyof FabricObject))).forEach((object) => canvas.remove(object));
+    const isBorderObject = (object: FabricObject): boolean => {
+      if (Boolean(object.get('blackFoxBorderPreset' as keyof FabricObject))) return true;
+      const children = (object as unknown as { _objects?: FabricObject[] })._objects || [];
+      return children.some((child) => isBorderObject(child));
+    };
+    canvas.getObjects().filter((object) => isBorderObject(object)).forEach((object) => canvas.remove(object));
+    canvas.discardActiveObject();
     canvas.renderAll();
-    remember();
+    if (rememberChange) remember();
   };
 
   const addCornerElement = (corners: 1 | 2 | 4) => {
@@ -1910,18 +2098,6 @@ export function App() {
 
           <section>
             <h2><Layers size={17} /> Borders</h2>
-            <label className="compact-label">Category
-              <select value={borderCategory} onChange={(event) => setBorderCategory(event.target.value as BorderCategory)}>
-                {BORDER_CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
-              </select>
-            </label>
-            <label className="compact-label">Corner style
-              <select value={borderCornerStyle} onChange={(event) => setBorderCornerStyle(event.target.value as 'square' | 'rounded' | 'chamfered')}>
-                <option value="square">Square</option>
-                <option value="rounded">Rounded</option>
-                <option value="chamfered">Chamfered</option>
-              </select>
-            </label>
             <div className="slider-stack">
               <label>Margin {borderMargin.toFixed(2)} in<input type="range" min="0.04" max="0.25" step="0.01" value={borderMargin} onChange={(event) => setBorderMargin(Number(event.target.value))} /></label>
               <label>Line {borderStroke.toFixed(3)} in<input type="range" min="0.006" max="0.04" step="0.002" value={borderStroke} onChange={(event) => setBorderStroke(Number(event.target.value))} /></label>
@@ -1932,18 +2108,32 @@ export function App() {
               <label><input type="checkbox" checked={borderMirrorX} onChange={(event) => setBorderMirrorX(event.target.checked)} /> Mirror H</label>
               <label><input type="checkbox" checked={borderMirrorY} onChange={(event) => setBorderMirrorY(event.target.checked)} /> Mirror V</label>
             </div>
-            <div className="button-grid preset-grid">
-              {Array.from({ length: 24 }, (_, index) => (
-                <button key={index} onClick={() => addBorder(index)}>Preset {index + 1}</button>
-              ))}
-            </div>
+            <details className="border-style-menu">
+              <summary>Choose border style</summary>
+              <div className="button-grid preset-grid">
+                {Array.from({ length: BORDER_STYLE_COUNT }, (_, index) => {
+                  const kind = BORDER_STYLE_KINDS[index];
+                  return (
+                    <button
+                      key={`${borderCategory}-${kind}`}
+                      className="border-preview-button"
+                      onClick={() => addBorder(index)}
+                      title={`${BORDER_STYLE_LABELS[kind]} border`}
+                    >
+                      <img src={borderPreviewSvg(index, 'Simple line')} alt="" />
+                      <span>{BORDER_STYLE_LABELS[kind]}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </details>
             <div className="button-grid">
               <button onClick={() => void applyBorderToSide('front')}>Apply to front</button>
               <button onClick={() => void applyBorderToSide('back')}>Apply to back</button>
               <button onClick={() => addCornerElement(1)}>1 Corner</button>
               <button onClick={() => addCornerElement(2)}>2 Corners</button>
               <button onClick={() => addCornerElement(4)}>4 Corners</button>
-              <button onClick={removeBorders}>Remove Border</button>
+              <button onClick={() => removeBorders()}>Remove Border</button>
             </div>
           </section>
 
