@@ -1,40 +1,76 @@
-# Lesson Plan Generator
+# Black Fox Business Card Designer
 
-A simple Next.js app for teachers, tutors, homeschool educators, and education students to generate complete standards-aligned lesson plans.
-
-## Setup
-
-```bash
-npm install
-cp .env.example .env.local
-npm run dev
-```
-
-Add your OpenAI API key to `.env.local` as `OPENAI_API_KEY`. The key is used only by the server-side API route and is never exposed to browser code.
+A browser-based React + TypeScript app for designing anodized aluminum business cards for laser engraving with tools such as the xTool F2 or xTool M1.
 
 ## Features
 
-- Next.js App Router
-- React and TypeScript
-- Tailwind CSS
-- Server-side API route using the OpenAI official JavaScript SDK and Responses API
-- Server-side standards lookup before lesson generation
-- Required form validation
-- Clean lesson-plan preview
-- PDF download with `@react-pdf/renderer`
+- Real-world business card sizing: 3.5 x 2 in landscape or 2 x 3.5 in portrait.
+- Fabric.js design canvas with rulers, grid, safe-area guide, snapping, front/back sides, and card color previews.
+- Text tools, uploaded graphics, vector shapes, QR codes, editable templates, and border tools.
+- Laser-ready SVG export, PNG export, PDF proof, ZIP front/back export, and project JSON export.
+- Local project saving and autosave in the browser.
+- Render Static Site deployment configuration included.
 
-## Deploy on Render
+## Local Development
 
-Deploy this app as a Render Web Service, not a Static Site, because lesson generation runs through the server-side API route.
+Install dependencies:
 
-1. Push this app folder to a GitHub repo.
-2. In Render, create a new Web Service from that repo.
-3. Use these settings if Render does not read `render.yaml` automatically:
-   - Runtime: Node
-   - Build Command: `npm install && npm run build`
-   - Start Command: `npm run start -- -p $PORT`
-4. Add environment variables in Render:
-   - `OPENAI_API_KEY`
-   - `OPENAI_MODEL` optional, defaults to `gpt-4.1-mini`
-   - `OPENAI_SEARCH_MODEL` optional, defaults to `OPENAI_MODEL`
-5. Deploy, then share the Render URL with users.
+```bash
+pnpm install
+```
+
+Run the app:
+
+```bash
+pnpm run dev
+```
+
+Open the local URL shown by Vite, usually:
+
+```text
+http://127.0.0.1:5173/
+```
+
+## Tests
+
+Run automated tests:
+
+```bash
+pnpm run test
+```
+
+## Production Build
+
+Create a production build:
+
+```bash
+pnpm run build
+```
+
+The production files will be generated in:
+
+```text
+dist/
+```
+
+## Render Deployment
+
+This project includes `render.yaml` for Render Static Site deployment.
+
+Render uses:
+
+```bash
+pnpm install --frozen-lockfile && pnpm run build
+```
+
+Publish directory:
+
+```text
+dist
+```
+
+## Notes
+
+- SVG is the primary laser-ready export format.
+- Card color previews are visual simulations and are excluded from laser-ready SVG exports.
+- QR code generation uses vector artwork and should still be scan-tested before production engraving.
