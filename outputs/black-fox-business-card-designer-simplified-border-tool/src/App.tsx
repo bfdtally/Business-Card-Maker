@@ -369,7 +369,7 @@ function borderPreviewSvg(index: number, category: BorderCategory) {
     circuit: '<path d="M16 31h20v-9h22v18h22" fill="none" stroke="#9eb5aa" stroke-width="2.2"/><circle cx="36" cy="22" r="3" fill="#176a4c"/><circle cx="58" cy="40" r="3" fill="#176a4c"/>',
     'industrial-slash': '<path d="M24 10l10 10M46 10l10 10M68 10l10 10M24 52l10-10M46 52l10-10M68 52l10-10" fill="none" stroke="#9eb5aa" stroke-width="2.1" stroke-linecap="round"/>',
     bracket: '<path d="M26 16H16v30h10M70 16h10v30H70" fill="none" stroke="#176a4c" stroke-width="2.6" stroke-linecap="round"/>',
-    floral: '<path d="M17 24c5-8 12-10 20-7M17 38c5 8 12 10 20 7M79 24c-5-8-12-10-20-7M79 38c-5 8-12 10-20 7" fill="none" stroke="#9eb5aa" stroke-width="1.8" stroke-linecap="round"/><circle cx="25" cy="31" r="2.2" fill="none" stroke="#176a4c" stroke-width="1.6"/><circle cx="71" cy="31" r="2.2" fill="none" stroke="#176a4c" stroke-width="1.6"/>',
+    floral: '<path d="M20 31c10-16 20-16 30 0M46 31c10 16 20 16 30 0" fill="none" stroke="#9eb5aa" stroke-width="2" stroke-linecap="round"/>',
     wave: '<path d="M18 17c10 8 18 8 28 0s18-8 32 0M18 45c10-8 18-8 28 0s18 8 32 0" fill="none" stroke="#9eb5aa" stroke-width="2" stroke-linecap="round"/>',
     'minimal-gap': '<path d="M38 10h20M38 52h20" fill="none" stroke="#176a4c" stroke-width="3" stroke-linecap="round"/>',
     'bold-corners': '<path d="M10 28V10h18M68 10h18v18M10 34v18h18M68 52h18V34" fill="none" stroke="#176a4c" stroke-width="4" stroke-linecap="round"/>',
@@ -956,25 +956,19 @@ export function App() {
     if (styleKind === 'bracket') objects.push(path(`M ${left + px(0.18)} ${top + px(0.12)} L ${left + px(0.08)} ${top + px(0.12)} L ${left + px(0.08)} ${bottom - px(0.12)} L ${left + px(0.18)} ${bottom - px(0.12)}`, { strokeWidth: sw * 0.75 }), path(`M ${right - px(0.18)} ${top + px(0.12)} L ${right - px(0.08)} ${top + px(0.12)} L ${right - px(0.08)} ${bottom - px(0.12)} L ${right - px(0.18)} ${bottom - px(0.12)}`, { strokeWidth: sw * 0.75 }));
     if (styleKind === 'floral') {
       const floralCorner = (cx: number, cy: number, sx: 1 | -1, sy: 1 | -1) => {
-        const tiny = px(0.035);
-        const small = px(0.075);
-        const mid = px(0.13);
-        const long = px(0.24);
-        const leaf = px(0.045);
+        const a = px(0.06);
+        const b = px(0.14);
+        const c = px(0.22);
         objects.push(
-          line([cx, cy + sy * long, cx, cy + sy * mid], { strokeWidth: sw * 0.55 }),
-          line([cx + sx * mid, cy, cx + sx * long, cy], { strokeWidth: sw * 0.55 }),
-          path(`M ${cx + sx * tiny} ${cy + sy * mid} C ${cx + sx * small} ${cy + sy * small}, ${cx + sx * mid} ${cy + sy * tiny}, ${cx + sx * long} ${cy + sy * tiny}`, { strokeWidth: sw * 0.55 }),
-          path(`M ${cx + sx * mid} ${cy + sy * tiny} C ${cx + sx * small} ${cy + sy * small}, ${cx + sx * tiny} ${cy + sy * mid}, ${cx + sx * tiny} ${cy + sy * long}`, { strokeWidth: sw * 0.55 }),
-          path(`M ${cx + sx * small} ${cy + sy * mid} C ${cx + sx * (small + leaf)} ${cy + sy * (mid - leaf)}, ${cx + sx * (small + leaf)} ${cy + sy * (mid + leaf)}, ${cx + sx * small} ${cy + sy * mid}`, { strokeWidth: sw * 0.45 }),
-          path(`M ${cx + sx * mid} ${cy + sy * small} C ${cx + sx * (mid - leaf)} ${cy + sy * (small + leaf)}, ${cx + sx * (mid + leaf)} ${cy + sy * (small + leaf)}, ${cx + sx * mid} ${cy + sy * small}`, { strokeWidth: sw * 0.45 }),
-          new FabricCircle({ left: cx + sx * (mid * 0.95) - sw * 0.75, top: cy + sy * (mid * 0.95) - sw * 0.75, radius: sw * 0.75, fill: 'transparent', stroke: previewEngrave, strokeWidth: sw * 0.45 }),
+          path(`M ${cx} ${cy + sy * c} C ${cx + sx * a} ${cy + sy * b}, ${cx + sx * b} ${cy + sy * a}, ${cx + sx * c} ${cy}`),
+          path(`M ${cx + sx * a} ${cy + sy * b} C ${cx + sx * b} ${cy + sy * b}, ${cx + sx * b} ${cy + sy * a}, ${cx + sx * a} ${cy + sy * a}`, { strokeWidth: sw * 0.55 }),
+          new FabricCircle({ left: cx + sx * c - sw * 0.9, top: cy - sw * 0.9, radius: sw * 0.9, fill: 'transparent', stroke: previewEngrave, strokeWidth: sw * 0.5 }),
         );
       };
-      floralCorner(left + px(0.1), top + px(0.1), 1, 1);
-      floralCorner(right - px(0.1), top + px(0.1), -1, 1);
-      floralCorner(left + px(0.1), bottom - px(0.1), 1, -1);
-      floralCorner(right - px(0.1), bottom - px(0.1), -1, -1);
+      floralCorner(left + px(0.08), top + px(0.08), 1, 1);
+      floralCorner(right - px(0.08), top + px(0.08), -1, 1);
+      floralCorner(left + px(0.08), bottom - px(0.08), 1, -1);
+      floralCorner(right - px(0.08), bottom - px(0.08), -1, -1);
     }
     if (styleKind === 'wave') {
       const scrollTop = top + px(0.08);
