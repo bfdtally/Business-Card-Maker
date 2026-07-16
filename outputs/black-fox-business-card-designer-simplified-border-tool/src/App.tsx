@@ -275,7 +275,6 @@ type BorderStyleKind =
   | 'diamond-marks'
   | 'tech-nodes'
   | 'circuit'
-  | 'african-geometric'
   | 'industrial-slash'
   | 'bracket'
   | 'floral'
@@ -294,10 +293,11 @@ const BORDER_STYLE_KINDS: BorderStyleKind[] = [
   'wave',
   'corner-steps',
   'inner-corners',
-  'african-geometric',
-  'circuit',
+  'bold-corners',
   'diagonal-cuts',
   'bracket',
+  'side-bars',
+  'short-rails',
 ];
 
 const BORDER_STYLE_LABELS: Record<BorderStyleKind, string> = {
@@ -316,8 +316,7 @@ const BORDER_STYLE_LABELS: Record<BorderStyleKind, string> = {
   'inner-corners': 'Inset corner frame',
   'diamond-marks': 'Diamond marks',
   'tech-nodes': 'Tech nodes',
-  circuit: 'Tech circuit',
-  'african-geometric': 'African geometric',
+  circuit: 'Circuit line',
   'industrial-slash': 'Industrial slash',
   bracket: 'Side bracket frame',
   floral: 'Floral corners',
@@ -367,12 +366,11 @@ function borderPreviewSvg(index: number, category: BorderCategory) {
     'inner-corners': '<path d="M22 27V22h8M66 22h8v5M22 35v5h8M66 40h8v-5" fill="none" stroke="#176a4c" stroke-width="2.2" stroke-linecap="round"/>',
     'diamond-marks': '<path d="M48 14l5 5-5 5-5-5zM48 38l5 5-5 5-5-5z" fill="none" stroke="#176a4c" stroke-width="2"/>',
     'tech-nodes': '<path d="M24 10v12h16M72 52V40H56" fill="none" stroke="#9eb5aa" stroke-width="2.2"/><circle cx="40" cy="22" r="3" fill="#176a4c"/><circle cx="56" cy="40" r="3" fill="#176a4c"/>',
-    circuit: '<path d="M18 14h16v9h14M78 48H62v-9H48M18 48h13v-8h12M78 14H65v8H54" fill="none" stroke="#9eb5aa" stroke-width="2" stroke-linecap="round"/><circle cx="48" cy="23" r="2.4" fill="#176a4c"/><circle cx="48" cy="39" r="2.4" fill="#176a4c"/><circle cx="43" cy="40" r="2" fill="#176a4c"/><circle cx="54" cy="22" r="2" fill="#176a4c"/>',
-    'african-geometric': '<path d="M18 13l6 7 6-7 6 7 6-7 6 7 6-7 6 7 6-7 6 7 6-7M18 49l6-7 6 7 6-7 6 7 6-7 6 7 6-7 6 7 6-7 6 7" fill="none" stroke="#176a4c" stroke-width="2" stroke-linejoin="round"/><path d="M13 22l6 5-6 5 6 5-6 5M83 22l-6 5 6 5-6 5 6 5" fill="none" stroke="#9eb5aa" stroke-width="1.8" stroke-linejoin="round"/>',
+    circuit: '<path d="M16 31h20v-9h22v18h22" fill="none" stroke="#9eb5aa" stroke-width="2.2"/><circle cx="36" cy="22" r="3" fill="#176a4c"/><circle cx="58" cy="40" r="3" fill="#176a4c"/>',
     'industrial-slash': '<path d="M24 10l10 10M46 10l10 10M68 10l10 10M24 52l10-10M46 52l10-10M68 52l10-10" fill="none" stroke="#9eb5aa" stroke-width="2.1" stroke-linecap="round"/>',
     bracket: '<path d="M26 16H16v30h10M70 16h10v30H70" fill="none" stroke="#176a4c" stroke-width="2.6" stroke-linecap="round"/>',
-    floral: '<path d="M18 26c6-10 15-11 24-3M18 36c6 10 15 11 24 3M78 26c-6-10-15-11-24-3M78 36c-6 10-15 11-24 3" fill="none" stroke="#9eb5aa" stroke-width="1.8" stroke-linecap="round"/><path d="M25 31c3-5 7-5 10 0-3 5-7 5-10 0ZM61 31c3-5 7-5 10 0-3 5-7 5-10 0Z" fill="none" stroke="#176a4c" stroke-width="1.6"/>',
-    wave: '<path d="M22 18c6 7 14 7 20 0s14-7 20 0 10 7 14 0M22 44c6-7 14-7 20 0s14 7 20 0 10-7 14 0" fill="none" stroke="#9eb5aa" stroke-width="2" stroke-linecap="round"/><path d="M42 18c-3 5-8 5-11 0M54 44c3-5 8-5 11 0" fill="none" stroke="#176a4c" stroke-width="1.5" stroke-linecap="round"/>',
+    floral: '<path d="M20 31c10-16 20-16 30 0M46 31c10 16 20 16 30 0" fill="none" stroke="#9eb5aa" stroke-width="2" stroke-linecap="round"/>',
+    wave: '<path d="M18 17c10 8 18 8 28 0s18-8 32 0M18 45c10-8 18-8 28 0s18 8 32 0" fill="none" stroke="#9eb5aa" stroke-width="2" stroke-linecap="round"/>',
     'minimal-gap': '<path d="M38 10h20M38 52h20" fill="none" stroke="#176a4c" stroke-width="3" stroke-linecap="round"/>',
     'bold-corners': '<path d="M10 28V10h18M68 10h18v18M10 34v18h18M68 52h18V34" fill="none" stroke="#176a4c" stroke-width="4" stroke-linecap="round"/>',
     triple: '<rect x="21" y="21" width="54" height="20" rx="1" fill="none" stroke="#d1dfd8" stroke-width="1.2"/>',
@@ -949,79 +947,39 @@ export function App() {
       const makeDiamond = (cx: number, cy: number) => new Polygon([{ x: cx, y: cy - px(0.04) }, { x: cx + px(0.04), y: cy }, { x: cx, y: cy + px(0.04) }, { x: cx - px(0.04), y: cy }], { fill: 'transparent', stroke: previewEngrave, strokeWidth: sw * 0.65 });
       objects.push(makeDiamond(canvasWidth / 2, top + px(0.08)), makeDiamond(canvasWidth / 2, bottom - px(0.08)));
     }
-    if (styleKind === 'african-geometric') {
-      const topY = top + px(0.09);
-      const bottomY = bottom - px(0.09);
-      const step = width / Math.max(6, density + 2);
-      for (let i = 0; i < Math.max(6, density + 2); i += 1) {
-        const x = left + i * step;
-        const next = Math.min(x + step, right);
-        const midX = (x + next) / 2;
-        objects.push(
-          new Polygon([{ x, y: topY }, { x: midX, y: topY + px(0.08) }, { x: next, y: topY }], { fill: 'transparent', stroke: previewEngrave, strokeWidth: sw * 0.55, strokeLineJoin: 'round' }),
-          new Polygon([{ x, y: bottomY }, { x: midX, y: bottomY - px(0.08) }, { x: next, y: bottomY }], { fill: 'transparent', stroke: previewEngrave, strokeWidth: sw * 0.55, strokeLineJoin: 'round' }),
-        );
-      }
-      const sideStep = height / 5;
-      for (let i = 1; i < 5; i += 1) {
-        const y = top + i * sideStep;
-        const diamond = (cx: number) => new Polygon([{ x: cx, y: y - px(0.045) }, { x: cx + px(0.045), y }, { x: cx, y: y + px(0.045) }, { x: cx - px(0.045), y }], { fill: 'transparent', stroke: previewEngrave, strokeWidth: sw * 0.5 });
-        objects.push(diamond(left + px(0.09)), diamond(right - px(0.09)));
-      }
-    }
     if (styleKind === 'tech-nodes' || styleKind === 'circuit') {
       objects.push(line([left + width * 0.25, top, left + width * 0.25, top + px(0.12)], { strokeWidth: sw * 0.55 }), line([right - width * 0.25, bottom, right - width * 0.25, bottom - px(0.12)], { strokeWidth: sw * 0.55 }));
       const dot = sw * 1.2;
       [[left + width * 0.25, top + px(0.12)], [right - width * 0.25, bottom - px(0.12)]].forEach(([cx, cy]) => objects.push(new FabricCircle({ left: cx - dot, top: cy - dot, radius: dot, fill: previewEngrave, stroke: previewEngrave })));
-      if (styleKind === 'circuit') {
-        const node = (cx: number, cy: number) => objects.push(new FabricCircle({ left: cx - dot, top: cy - dot, radius: dot, fill: previewEngrave, stroke: previewEngrave }));
-        objects.push(
-          line([left + width * 0.14, top + px(0.11), left + width * 0.3, top + px(0.11)], { strokeWidth: sw * 0.45 }),
-          line([left + width * 0.3, top + px(0.11), left + width * 0.3, top + px(0.22)], { strokeWidth: sw * 0.45 }),
-          line([right - width * 0.14, bottom - px(0.11), right - width * 0.3, bottom - px(0.11)], { strokeWidth: sw * 0.45 }),
-          line([right - width * 0.3, bottom - px(0.11), right - width * 0.3, bottom - px(0.22)], { strokeWidth: sw * 0.45 }),
-          line([left + px(0.1), top + height * 0.35, left + px(0.28), top + height * 0.35], { strokeWidth: sw * 0.45 }),
-          line([right - px(0.1), top + height * 0.65, right - px(0.28), top + height * 0.65], { strokeWidth: sw * 0.45 }),
-        );
-        node(left + width * 0.3, top + px(0.22));
-        node(right - width * 0.3, bottom - px(0.22));
-        node(left + px(0.28), top + height * 0.35);
-        node(right - px(0.28), top + height * 0.65);
-      }
+      if (styleKind === 'circuit') objects.push(line([left + width * 0.25, canvasHeight / 2, right - width * 0.25, canvasHeight / 2], { strokeWidth: sw * 0.45, strokeDashArray: [px(0.08), px(0.05)] }));
     }
     if (styleKind === 'bracket') objects.push(path(`M ${left + px(0.18)} ${top + px(0.12)} L ${left + px(0.08)} ${top + px(0.12)} L ${left + px(0.08)} ${bottom - px(0.12)} L ${left + px(0.18)} ${bottom - px(0.12)}`, { strokeWidth: sw * 0.75 }), path(`M ${right - px(0.18)} ${top + px(0.12)} L ${right - px(0.08)} ${top + px(0.12)} L ${right - px(0.08)} ${bottom - px(0.12)} L ${right - px(0.18)} ${bottom - px(0.12)}`, { strokeWidth: sw * 0.75 }));
     if (styleKind === 'floral') {
       const floralCorner = (cx: number, cy: number, sx: 1 | -1, sy: 1 | -1) => {
-        const small = px(0.065);
-        const mid = px(0.13);
-        const long = px(0.23);
-        const dot = sw * 0.75;
+        const a = px(0.06);
+        const b = px(0.14);
+        const c = px(0.22);
         objects.push(
-          line([cx, cy + sy * long, cx, cy + sy * mid], { strokeWidth: sw * 0.55 }),
-          line([cx + sx * mid, cy, cx + sx * long, cy], { strokeWidth: sw * 0.55 }),
-          path(`M ${cx + sx * small} ${cy + sy * mid} C ${cx + sx * mid} ${cy + sy * small}, ${cx + sx * long} ${cy + sy * small}, ${cx + sx * long} ${cy + sy * mid}`, { strokeWidth: sw * 0.5 }),
-          path(`M ${cx + sx * mid} ${cy + sy * small} C ${cx + sx * small} ${cy + sy * mid}, ${cx + sx * small} ${cy + sy * long}, ${cx + sx * mid} ${cy + sy * long}`, { strokeWidth: sw * 0.5 }),
-          new FabricCircle({ left: cx + sx * mid - dot, top: cy + sy * mid - dot, radius: dot, fill: 'transparent', stroke: previewEngrave, strokeWidth: sw * 0.45 }),
-          new Polygon([{ x: cx + sx * small, y: cy + sy * (mid + px(0.035)) }, { x: cx + sx * (small + px(0.06)), y: cy + sy * mid }, { x: cx + sx * small, y: cy + sy * (mid - px(0.035)) }], { fill: 'transparent', stroke: previewEngrave, strokeWidth: sw * 0.42, strokeLineJoin: 'round' }),
-          new Polygon([{ x: cx + sx * (mid + px(0.035)), y: cy + sy * small }, { x: cx + sx * mid, y: cy + sy * (small + px(0.06)) }, { x: cx + sx * (mid - px(0.035)), y: cy + sy * small }], { fill: 'transparent', stroke: previewEngrave, strokeWidth: sw * 0.42, strokeLineJoin: 'round' }),
+          path(`M ${cx} ${cy + sy * c} C ${cx + sx * a} ${cy + sy * b}, ${cx + sx * b} ${cy + sy * a}, ${cx + sx * c} ${cy}`),
+          path(`M ${cx + sx * a} ${cy + sy * b} C ${cx + sx * b} ${cy + sy * b}, ${cx + sx * b} ${cy + sy * a}, ${cx + sx * a} ${cy + sy * a}`, { strokeWidth: sw * 0.55 }),
+          new FabricCircle({ left: cx + sx * c - sw * 0.9, top: cy - sw * 0.9, radius: sw * 0.9, fill: 'transparent', stroke: previewEngrave, strokeWidth: sw * 0.5 }),
         );
       };
-      floralCorner(left + px(0.1), top + px(0.1), 1, 1);
-      floralCorner(right - px(0.1), top + px(0.1), -1, 1);
-      floralCorner(left + px(0.1), bottom - px(0.1), 1, -1);
-      floralCorner(right - px(0.1), bottom - px(0.1), -1, -1);
+      floralCorner(left + px(0.08), top + px(0.08), 1, 1);
+      floralCorner(right - px(0.08), top + px(0.08), -1, 1);
+      floralCorner(left + px(0.08), bottom - px(0.08), 1, -1);
+      floralCorner(right - px(0.08), bottom - px(0.08), -1, -1);
     }
     if (styleKind === 'wave') {
       const scrollTop = top + px(0.08);
       const scrollBottom = bottom - px(0.08);
       const scrollLeft = left + px(0.08);
       const scrollRight = right - px(0.08);
-      const centerScroll = (y: number, sy: 1 | -1) => path(`M ${canvasWidth / 2 - px(0.35)} ${y} C ${canvasWidth / 2 - px(0.22)} ${y + sy * px(0.1)}, ${canvasWidth / 2 - px(0.12)} ${y - sy * px(0.1)}, ${canvasWidth / 2} ${y} C ${canvasWidth / 2 + px(0.12)} ${y + sy * px(0.1)}, ${canvasWidth / 2 + px(0.22)} ${y - sy * px(0.1)}, ${canvasWidth / 2 + px(0.35)} ${y}`, { strokeWidth: sw * 0.6 });
       objects.push(
-        centerScroll(scrollTop, -1),
-        centerScroll(scrollBottom, 1),
-        path(`M ${scrollLeft} ${canvasHeight / 2 - px(0.24)} C ${scrollLeft - px(0.09)} ${canvasHeight / 2 - px(0.12)}, ${scrollLeft + px(0.09)} ${canvasHeight / 2 - px(0.06)}, ${scrollLeft} ${canvasHeight / 2} C ${scrollLeft - px(0.09)} ${canvasHeight / 2 + px(0.06)}, ${scrollLeft + px(0.09)} ${canvasHeight / 2 + px(0.12)}, ${scrollLeft} ${canvasHeight / 2 + px(0.24)}`, { strokeWidth: sw * 0.55 }),
-        path(`M ${scrollRight} ${canvasHeight / 2 - px(0.24)} C ${scrollRight + px(0.09)} ${canvasHeight / 2 - px(0.12)}, ${scrollRight - px(0.09)} ${canvasHeight / 2 - px(0.06)}, ${scrollRight} ${canvasHeight / 2} C ${scrollRight + px(0.09)} ${canvasHeight / 2 + px(0.06)}, ${scrollRight - px(0.09)} ${canvasHeight / 2 + px(0.12)}, ${scrollRight} ${canvasHeight / 2 + px(0.24)}`, { strokeWidth: sw * 0.55 }),
+        path(`M ${canvasWidth / 2 - px(0.28)} ${scrollTop} C ${canvasWidth / 2 - px(0.18)} ${scrollTop - px(0.08)}, ${canvasWidth / 2 - px(0.08)} ${scrollTop + px(0.08)}, ${canvasWidth / 2} ${scrollTop} C ${canvasWidth / 2 + px(0.08)} ${scrollTop - px(0.08)}, ${canvasWidth / 2 + px(0.18)} ${scrollTop + px(0.08)}, ${canvasWidth / 2 + px(0.28)} ${scrollTop}`),
+        path(`M ${canvasWidth / 2 - px(0.28)} ${scrollBottom} C ${canvasWidth / 2 - px(0.18)} ${scrollBottom + px(0.08)}, ${canvasWidth / 2 - px(0.08)} ${scrollBottom - px(0.08)}, ${canvasWidth / 2} ${scrollBottom} C ${canvasWidth / 2 + px(0.08)} ${scrollBottom + px(0.08)}, ${canvasWidth / 2 + px(0.18)} ${scrollBottom - px(0.08)}, ${canvasWidth / 2 + px(0.28)} ${scrollBottom}`),
+        path(`M ${scrollLeft} ${canvasHeight / 2 - px(0.18)} C ${scrollLeft - px(0.07)} ${canvasHeight / 2 - px(0.08)}, ${scrollLeft + px(0.07)} ${canvasHeight / 2}, ${scrollLeft} ${canvasHeight / 2 + px(0.18)}`, { strokeWidth: sw * 0.65 }),
+        path(`M ${scrollRight} ${canvasHeight / 2 - px(0.18)} C ${scrollRight + px(0.07)} ${canvasHeight / 2 - px(0.08)}, ${scrollRight - px(0.07)} ${canvasHeight / 2}, ${scrollRight} ${canvasHeight / 2 + px(0.18)}`, { strokeWidth: sw * 0.65 }),
       );
     }
     if (styleKind === 'triple') objects.push(rect(px(0.13), { strokeWidth: sw * 0.45 }));
